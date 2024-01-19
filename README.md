@@ -1,3 +1,3 @@
 # FitPage-Assignment
 
-## check master branch for code
+## checkout master branch for code
