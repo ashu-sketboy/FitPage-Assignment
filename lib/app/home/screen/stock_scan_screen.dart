@@ -2,7 +2,7 @@ import 'package:fit_page_assignment/app/home/model/stock_scan_response.dart';
 import 'package:fit_page_assignment/app/home/screen/set_parameter_screen.dart';
 import 'package:fit_page_assignment/app/home/screen/stock_price_list_screen.dart';
 import 'package:fit_page_assignment/app/home/widgets/home_tile.dart';
-import 'package:flutter/gestures.dart';
+import 'package:fit_page_assignment/common/utils/get_text_with_variables.dart';
 import 'package:flutter/material.dart';
 
 class StockScanScreen extends StatelessWidget {
@@ -33,7 +33,23 @@ class StockScanScreen extends StatelessWidget {
                     style: const TextStyle(color: Colors.white),
                   );
                 case 'variable':
-                  return getTextWithVariables(context, criterion);
+                  return getTextWithVariables(criterion: criterion, onValueTap: (List val) => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => StockPriceListScreen(
+                            prices: val,
+                          ),
+                        ),
+                      ), onIndicatorTap: (Map<String, dynamic> val) {
+                        Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SetParameterScreen(
+                            params: val,
+                          ),
+                        ),
+                      );
+                      });
               }
             },
             separatorBuilder: (context, index) {
@@ -49,55 +65,6 @@ class StockScanScreen extends StatelessWidget {
           ))
         ],
       ),
-    ));
-  }
-
-  Widget getTextWithVariables(BuildContext context, Criterion criterion) {
-    final List<String> strings = criterion.text?.split(' ') ?? [];
-
-    return RichText(
-        text: TextSpan(
-      children: strings.map<InlineSpan>((e) {
-        if (e.contains('\$')) {
-          switch (criterion.variable?[e]['type']) {
-            case 'value':
-              return TextSpan(
-                text:
-                    " (${criterion.variable?[e]['values'][0].toString() ?? e}) ",
-                style: const TextStyle(color: Colors.blueAccent),
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => StockPriceListScreen(
-                            prices: criterion.variable?[e]['values'],
-                          ),
-                        ),
-                      ),
-              );
-            default: //  'indicator'
-              return TextSpan(
-                text:
-                    " (${criterion.variable?[e]['default_value'].toString() ?? e}) ",
-                style: const TextStyle(color: Colors.blueAccent),
-                recognizer: TapGestureRecognizer()
-                  ..onTap = () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SetParameterScreen(
-                            params: criterion.variable?[e],
-                          ),
-                        ),
-                      ),
-              );
-          }
-        } else {
-          return TextSpan(
-            text: "$e ",
-            style: const TextStyle(color: Colors.white),
-          );
-        }
-      }).toList(),
     ));
   }
 }

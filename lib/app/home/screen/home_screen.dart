@@ -27,7 +27,9 @@ class _HomeScreen extends StatelessWidget {
           child: Scaffold(
             body: state.status == HomeStatus.loading
                 ? const Center(child: CircularProgressIndicator())
-                : ListView.builder(
+                : state.status == HomeStatus.error ? Center(
+                  child: Text(state.error, style: const TextStyle(color: Colors.white),),
+                ) : ListView.builder(
                     itemCount: state.stockScanResponse?.length ?? 0,
                     itemBuilder: (context, index) {
                       return InkWell(
